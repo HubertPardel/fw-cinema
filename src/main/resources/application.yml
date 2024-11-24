@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: cinema
+  datasource:
+    driverClassName: org.postgresql.Driver
+    url: ${POSTGRESQL_URL:jdbc:postgresql://localhost:5432/cinema?currentSchema=cinema}
+    username: ${POSTGRESQL_USERNAME:cinema}
+    password: ${POSTGRESQL_PASSWORD:password}
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    show-sql: false
