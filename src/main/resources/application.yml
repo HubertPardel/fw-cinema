@@ -1,3 +1,6 @@
+server:
+  servlet:
+    contextPath: /api
 spring:
   application:
     name: cinema
@@ -9,3 +12,7 @@ spring:
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     show-sql: false
+  flyway:
+    enabled: true
+    baselineOnMigrate: true
+    schemas: cinema
