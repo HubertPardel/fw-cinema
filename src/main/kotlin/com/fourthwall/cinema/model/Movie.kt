@@ -1,6 +1,7 @@
 package com.fourthwall.cinema.model
 
 import jakarta.persistence.*
+import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.repository.PagingAndSortingRepository
 
 @Table(name = "movies")
@@ -29,4 +30,4 @@ class Movie(
     }
 }
 
-interface MovieRepository : PagingAndSortingRepository<Movie, Int>
+interface MovieRepository : JpaRepository<Movie, Int>
