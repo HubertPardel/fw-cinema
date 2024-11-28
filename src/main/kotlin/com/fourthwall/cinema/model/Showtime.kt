@@ -3,6 +3,7 @@ package com.fourthwall.cinema.model
 import jakarta.persistence.*
 import org.springframework.data.repository.CrudRepository
 import org.springframework.data.repository.PagingAndSortingRepository
+import org.springframework.stereotype.Repository
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.LocalTime
@@ -23,9 +24,13 @@ data class Showtime(
 )
 
 @Embeddable
-data class Money(val amount: BigDecimal? = null, @Enumerated(EnumType.STRING) val currency: Currency? = null)
+data class Money(val amount: BigDecimal, @Enumerated(EnumType.STRING) val currency: Currency)
 
 enum class Currency(val code: String) { EUR("EUR"), PLN("PLN") }
 
-interface ShowtimeRepository : PagingAndSortingRepository<Showtime, Int>
+@Repository
+interface ShowtimeRepository : PagingAndSortingRepository<Showtime, Int> {
+    fun findByMovieIdAndShowDateGreaterThanEqual(movieId: Int, startDate: LocalDate): List<Showtime>
+    fun findByMovieIdAndShowDateBetween(movieId: Int, startDate: LocalDate, endDate: LocalDate): List<Showtime>
+}
 
