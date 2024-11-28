@@ -21,7 +21,7 @@ class RestControllerAdvice {
     }
 
     @ExceptionHandler(value = [ReviewAlreadyExists::class])
-    fun handleReviewAlreadyxistsException(ex: ReviewAlreadyExists): ResponseEntity<Any> {
+    fun handleReviewAlreadyExistsException(ex: ReviewAlreadyExists): ResponseEntity<Any> {
         return ResponseEntity(ex.message, HttpStatus.CONFLICT)
     }
 
