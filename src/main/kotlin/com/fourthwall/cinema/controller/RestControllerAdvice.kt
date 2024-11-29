@@ -2,6 +2,7 @@ package com.fourthwall.cinema.controller
 
 import com.fourthwall.cinema.service.MovieNotExistsException
 import com.fourthwall.cinema.service.ReviewAlreadyExists
+import com.fourthwall.cinema.service.ShowtimeNotExistsException
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -32,11 +33,14 @@ class RestControllerAdvice {
         return ResponseEntity(getErrorsMap(errors), HttpHeaders(), HttpStatus.BAD_REQUEST)
     }
 
+    @ExceptionHandler(value = [ShowtimeNotExistsException::class])
+    fun handleShowtimeNotExistsException(ex: ShowtimeNotExistsException): ResponseEntity<Any> {
+        return ResponseEntity(ex.message, HttpStatus.NOT_FOUND)
+    }
+
     private fun getErrorsMap(errors: List<String?>): Map<String, List<String?>> {
         val errorResponse: MutableMap<String, List<String?>> = HashMap()
         errorResponse["errors"] = errors
         return errorResponse
     }
-
-
 }
