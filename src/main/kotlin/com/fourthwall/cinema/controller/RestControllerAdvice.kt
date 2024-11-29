@@ -14,7 +14,7 @@ import java.util.stream.Collectors
 
 
 @ControllerAdvice
-class RestControllerAdvice {
+internal class RestControllerAdvice {
 
     @ExceptionHandler(value = [MovieNotExistsException::class])
     fun handleMovieNotExistsException(ex: MovieNotExistsException): ResponseEntity<Any> {

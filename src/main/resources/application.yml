@@ -16,3 +16,7 @@ spring:
     enabled: true
     baselineOnMigrate: true
     schemas: cinema
+integration:
+  omdb:
+    url: http://www.omdbapi.com/?apikey={omdbApiKey}&i={imdbId}
+    apiKey: ${OMDB_API_KEY:""}
