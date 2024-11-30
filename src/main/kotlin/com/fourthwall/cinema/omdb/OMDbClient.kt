@@ -1,11 +1,14 @@
 package com.fourthwall.cinema.omdb
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.MediaType.APPLICATION_JSON
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestClient
 import org.springframework.web.client.body
+
+private val logger = KotlinLogging.logger { }
 
 @Service
 class OMDbClient {
@@ -18,6 +21,8 @@ class OMDbClient {
 
     fun getMovieDetails(imdbId: String): OMDbResponse? {
         val restClient = RestClient.create()
+
+        logger.info { "Calling OMDb service with imdbId=$imdbId" }
 
         return restClient.get()
             .uri(omdbUrl, omdbApiKey, imdbId)

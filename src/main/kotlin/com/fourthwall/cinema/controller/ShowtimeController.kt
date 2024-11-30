@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import jakarta.validation.Valid
 import jakarta.validation.constraints.NotNull
+import mu.KotlinLogging
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -17,6 +18,8 @@ import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
+
+private val logger = KotlinLogging.logger { }
 
 @RestController
 @RequestMapping("/v1/showtimes")
@@ -30,9 +33,11 @@ internal class ShowtimeController(private val showtimeService: ShowtimeService) 
         ]
     )
     @GetMapping("/{showtimeId}")
-    fun getShowtime(@PathVariable showtimeId: Int) =
-        ResponseEntity.status(HttpStatus.OK)
+    fun getShowtime(@PathVariable showtimeId: Int): ResponseEntity<GetShowtimeResponse> {
+        logger.info { "Fetching showtime id=$showtimeId" }
+        return ResponseEntity.status(HttpStatus.OK)
             .body(GetShowtimeResponse.fromShowtime(showtimeService.findById(showtimeId)))
+    }
 
     @Operation(summary = "Returns all showtimes for given movie and date range")
     @ApiResponses(
@@ -46,7 +51,10 @@ internal class ShowtimeController(private val showtimeService: ShowtimeService) 
         @RequestParam movieId: Int,
         @RequestParam fromDate: LocalDate = LocalDate.now(),
         @RequestParam(required = false) toDate: LocalDate?
-    ) = GetShowtimesResponse.fromShowtimes(movieId, showtimeService.findShowtimes(movieId, fromDate, toDate))
+    ): GetShowtimesResponse {
+        logger.info { "Fetching showtimes for movie id=$movieId" }
+        return GetShowtimesResponse.fromShowtimes(movieId, showtimeService.findShowtimes(movieId, fromDate, toDate))
+    }
 
     @Operation(summary = "Creates new showtime")
     @ApiResponses(
@@ -56,9 +64,10 @@ internal class ShowtimeController(private val showtimeService: ShowtimeService) 
         ]
     )
     @PostMapping
-    fun createShowtime(@RequestBody @Valid request: CreateShowtimeRequest): ResponseEntity<CreateShowtimeResponse> =
-        ResponseEntity.status(HttpStatus.CREATED).body(showtimeService.createShowtime(request))
-
+    fun createShowtime(@RequestBody @Valid request: CreateShowtimeRequest): ResponseEntity<CreateShowtimeResponse> {
+        logger.info { "Creating showtime for movie id=${request.movieId}" }
+        return ResponseEntity.status(HttpStatus.CREATED).body(showtimeService.createShowtime(request))
+    }
 
     @Operation(summary = "Updates showtime")
     @ApiResponses(
@@ -72,10 +81,10 @@ internal class ShowtimeController(private val showtimeService: ShowtimeService) 
         @RequestBody @Valid request: UpdateShowtimeRequest,
         @PathVariable showtimeId: Int
     ): ResponseEntity<Any> {
+        logger.info { "Updating showtime id =$showtimeId" }
         showtimeService.updateShowtime(showtimeId, request)
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build()
     }
-
 }
 
 @Schema(description = "Response for getting movie showtimes")

@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
+import mu.KotlinLogging
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
@@ -13,6 +14,8 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import java.math.BigDecimal
+
+private val logger = KotlinLogging.logger { }
 
 @RestController
 @RequestMapping("/v1/movies")
@@ -26,9 +29,11 @@ class MovieController(private val movieService: MovieService) {
         ]
     )
     @GetMapping("/{movieId}")
-    fun getMovie(@PathVariable movieId: Int): ResponseEntity<GetMovieResponse> =
-        ResponseEntity.status(HttpStatus.OK)
+    fun getMovie(@PathVariable movieId: Int): ResponseEntity<GetMovieResponse> {
+        logger.info { "Fetching movie id=$movieId" }
+        return ResponseEntity.status(HttpStatus.OK)
             .body(GetMovieResponse.fromMovie(movieService.findById(movieId)))
+    }
 
     @Operation(summary = "Get all movies")
     @ApiResponses(
@@ -37,9 +42,11 @@ class MovieController(private val movieService: MovieService) {
         ]
     )
     @GetMapping
-    fun getAllMovies(): ResponseEntity<List<GetMovieResponse>> =
-        ResponseEntity.status(HttpStatus.OK)
+    fun getAllMovies(): ResponseEntity<List<GetMovieResponse>> {
+        logger.info { "Fetching all movies" }
+        return ResponseEntity.status(HttpStatus.OK)
             .body(movieService.findAll().map { GetMovieResponse.fromMovie(it) })
+    }
 
     @Operation(summary = "Get movie details by id")
     @ApiResponses(
@@ -50,9 +57,10 @@ class MovieController(private val movieService: MovieService) {
         ]
     )
     @GetMapping("/details/{movieId}")
-    fun getMovieDetails(@PathVariable movieId: Int): ResponseEntity<GetMovieDetails> =
-        ResponseEntity.status(HttpStatus.OK)
-            .body(movieService.findMovieDetails(movieId))
+    fun getMovieDetails(@PathVariable movieId: Int): ResponseEntity<GetMovieDetails> {
+        logger.info { "Fetching movie details for movie id=$movieId" }
+        return ResponseEntity.status(HttpStatus.OK).body(movieService.findMovieDetails(movieId))
+    }
 }
 
 @Schema(description = "Response for getting movie")

@@ -11,9 +11,12 @@ import jakarta.validation.Valid
 import jakarta.validation.constraints.Email
 import jakarta.validation.constraints.NotNull
 import jakarta.websocket.server.PathParam
+import mu.KotlinLogging
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+
+private val logger = KotlinLogging.logger { }
 
 @RestController
 @RequestMapping("/v1/reviews")
@@ -29,7 +32,10 @@ class ReviewController(private val reviewService: ReviewService) {
     @GetMapping
     fun getByMovieId(
         @PathParam("movieId") movieId: Int
-    ) = reviewService.findMovieReviews(movieId)
+    ): GetMovieReviewsResponse {
+        logger.info { "Fetching reviews for movie id=$movieId" }
+        return reviewService.findMovieReviews(movieId)
+    }
 
     @Operation(summary = "Creates review for given movieId")
     @ApiResponses(
@@ -41,9 +47,10 @@ class ReviewController(private val reviewService: ReviewService) {
         ]
     )
     @PostMapping
-    fun createReview(@Valid @RequestBody request: CreateReviewRequest): ResponseEntity<CreateReviewResponse> =
-        ResponseEntity.status(HttpStatus.CREATED).body(reviewService.rateMovie(request))
-
+    fun createReview(@Valid @RequestBody request: CreateReviewRequest): ResponseEntity<CreateReviewResponse> {
+        logger.info { "Creating review for movie id=${request.movieId} " }
+        return ResponseEntity.status(HttpStatus.CREATED).body(reviewService.rateMovie(request))
+    }
 }
 
 @Schema(description = "Request for review creation")
