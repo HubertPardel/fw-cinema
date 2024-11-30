@@ -3,8 +3,6 @@ package com.fourthwall.cinema.model
 import com.fourthwall.cinema.controller.MoneyDTO
 import jakarta.persistence.*
 import org.springframework.data.jpa.repository.JpaRepository
-import org.springframework.data.repository.CrudRepository
-import org.springframework.data.repository.PagingAndSortingRepository
 import org.springframework.stereotype.Repository
 import java.math.BigDecimal
 import java.time.LocalDate

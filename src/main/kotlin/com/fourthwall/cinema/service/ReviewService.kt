@@ -2,14 +2,15 @@ package com.fourthwall.cinema.service
 
 import com.fourthwall.cinema.controller.CreateReviewRequest
 import com.fourthwall.cinema.controller.CreateReviewResponse
-import com.fourthwall.cinema.model.*
-import org.springframework.data.domain.Page
-import org.springframework.data.domain.Pageable
+import com.fourthwall.cinema.controller.GetMovieReviewsResponse
+import com.fourthwall.cinema.model.MovieRepository
+import com.fourthwall.cinema.model.Review
+import com.fourthwall.cinema.model.ReviewRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 interface ReviewService {
-    fun findMovieReviews(movieId: Int, pageable: Pageable): Page<Review>
+    fun findMovieReviews(movieId: Int): GetMovieReviewsResponse
     fun rateMovie(request: CreateReviewRequest): CreateReviewResponse
 }
 
@@ -38,10 +39,10 @@ class ReviewServiceImpl(private val reviewRepository: ReviewRepository, private 
         )
     }
 
-    override fun findMovieReviews(movieId: Int, pageable: Pageable): Page<Review> {
+    override fun findMovieReviews(movieId: Int): GetMovieReviewsResponse {
         if (!movieRepository.existsById(movieId))
             throw MovieNotExistsException(movieId)
-        return reviewRepository.findByMovieId(movieId, pageable)
+        return GetMovieReviewsResponse.fromReviews(movieId, reviewRepository.findByMovieId(movieId))
     }
 
     private fun String.isEmailValid(): Boolean {

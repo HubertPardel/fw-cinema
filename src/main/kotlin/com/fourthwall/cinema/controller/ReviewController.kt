@@ -11,7 +11,6 @@ import jakarta.validation.Valid
 import jakarta.validation.constraints.Email
 import jakarta.validation.constraints.NotNull
 import jakarta.websocket.server.PathParam
-import org.springframework.data.domain.PageRequest
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -29,10 +28,8 @@ class ReviewController(private val reviewService: ReviewService) {
     )
     @GetMapping
     fun getByMovieId(
-        @PathParam("movieId") movieId: Int,
-        @RequestParam(defaultValue = "0") pageNo: Int,
-        @RequestParam(defaultValue = "10") pageSize: Int
-    ) = reviewService.findMovieReviews(movieId, PageRequest.of(pageNo, pageSize))
+        @PathParam("movieId") movieId: Int
+    ) = reviewService.findMovieReviews(movieId)
 
     @Operation(summary = "Creates review for given movieId")
     @ApiResponses(
@@ -68,7 +65,7 @@ data class CreateReviewRequest(
         description = "Movie rating",
         example = "AVERAGE",
         type = "string",
-        allowableValues = arrayOf("VERY_BAD", "BAD", "AVERAGE", "GOOD", "VERY_GOOD")
+        allowableValues = ["VERY_BAD", "BAD", "AVERAGE", "GOOD", "VERY_GOOD"]
     ) val rating: Rating
 )
 
@@ -88,11 +85,45 @@ data class CreateReviewResponse(
         description = "Movie rating",
         example = "3",
         type = "int",
-        allowableValues = arrayOf("1", "2", "3", "4", "5")
+        allowableValues = ["1", "2", "3", "4", "5"]
     ) val score: Int
 ) {
     companion object {
         fun fromReview(review: Review) =
-            CreateReviewResponse(review.movie.title, review.userEmail, review.userRate.score)
+            with(review) { CreateReviewResponse(movie.title, userEmail, userRate.score) }
+    }
+}
+
+@Schema(description = "Response for getting movie reviews")
+data class GetMovieReviewsResponse(
+    @field:Schema(
+        description = "Movie id",
+        example = "1",
+        type = "int"
+    ) val movieId: Int,
+    @field:Schema(
+        description = "List of reviews"
+    ) val reviews: List<ReviewDTO>
+) {
+    companion object {
+        fun fromReviews(movieId: Int, reviews: List<Review>) =
+            GetMovieReviewsResponse(movieId, reviews.map { ReviewDTO.fromReview(it) })
+    }
+}
+
+@Schema(description = "Represents review")
+data class ReviewDTO(
+    @field:Schema(
+        description = "Movie rating",
+        example = "GOOD",
+        type = "string"
+    ) val rating: String, @field:Schema(
+        description = "Author's email",
+        example = "john@doe.com",
+        type = "string"
+    ) val autor: String
+) {
+    companion object {
+        fun fromReview(review: Review) = with(review) { ReviewDTO(userRate.name, userEmail) }
     }
 }

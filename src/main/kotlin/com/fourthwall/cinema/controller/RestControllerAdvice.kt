@@ -1,5 +1,6 @@
 package com.fourthwall.cinema.controller
 
+import com.fourthwall.cinema.service.MovieDetailsNotAvailableException
 import com.fourthwall.cinema.service.MovieNotExistsException
 import com.fourthwall.cinema.service.ReviewAlreadyExists
 import com.fourthwall.cinema.service.ShowtimeNotExistsException
@@ -19,6 +20,11 @@ internal class RestControllerAdvice {
     @ExceptionHandler(value = [MovieNotExistsException::class])
     fun handleMovieNotExistsException(ex: MovieNotExistsException): ResponseEntity<Any> {
         return ResponseEntity(ex.message, HttpStatus.NOT_FOUND)
+    }
+
+    @ExceptionHandler(value = [MovieDetailsNotAvailableException::class])
+    fun handleMovieDetailsNotAvailableException(ex: MovieDetailsNotAvailableException): ResponseEntity<Any> {
+        return ResponseEntity(ex.message, HttpStatus.BAD_REQUEST)
     }
 
     @ExceptionHandler(value = [ReviewAlreadyExists::class])

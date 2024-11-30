@@ -1,9 +1,6 @@
 package com.fourthwall.cinema.model
 
 import jakarta.persistence.*
-
-import org.springframework.data.domain.Page
-import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
 
@@ -22,6 +19,6 @@ enum class Rating(val score: Int) {
 
 @Repository
 interface ReviewRepository : JpaRepository<Review, Int> {
-    fun findByMovieId(movieId: Int, pageable: Pageable): Page<Review>
+    fun findByMovieId(movieId: Int): List<Review>
     fun findByMovieIdAndUserEmail(movieId: Int, userEmail: String): Review?
 }

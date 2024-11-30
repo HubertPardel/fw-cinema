@@ -20,17 +20,18 @@ class MovieServiceImpl(private val movieRepository: MovieRepository, private val
         val movie = movieRepository.findById(movieId).orElseThrow { MovieNotExistsException(movieId) }
         val response = omdbClient.getMovieDetails(movie.imdbId)
         return response?.let {
-            GetMovieDetails(
-                movieId = movieId,
-                movieTitle = response.title,
-                movieDescription = response.description,
-                runtime = response.runtime,
-                releaseDate = response.releaseDate,
-                imdbId = movie.imdbId,
-                imdbRating = BigDecimal(response.imdbRating)
-            )
-        } ?: GetMovieDetails(movieId = movieId, imdbId = movie.imdbId)
-
+            with(response) {
+                GetMovieDetails(
+                    movieId = movieId,
+                    movieTitle = title,
+                    movieDescription = description,
+                    runtime = runtime,
+                    releaseDate = releaseDate,
+                    imdbId = movie.imdbId,
+                    imdbRating = BigDecimal(imdbRating)
+                )
+            }
+        } ?: throw MovieDetailsNotAvailableException(movie.imdbId)
     }
 
     override fun findById(movieId: Int): Movie =
@@ -41,3 +42,6 @@ class MovieServiceImpl(private val movieRepository: MovieRepository, private val
 }
 
 class MovieNotExistsException(movieId: Int) : RuntimeException("No movie with id=$movieId exists")
+
+class MovieDetailsNotAvailableException(imdbId: String) :
+    RuntimeException("Unable to fetch movie details for imdbId=$imdbId")

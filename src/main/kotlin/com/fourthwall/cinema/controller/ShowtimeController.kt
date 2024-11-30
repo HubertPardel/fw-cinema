@@ -67,7 +67,7 @@ internal class ShowtimeController(private val showtimeService: ShowtimeService) 
             ApiResponse(responseCode = "404", description = "Showtime with given id not found")
         ]
     )
-    @PutMapping("/{showtimeId}")
+    @PatchMapping("/{showtimeId}")
     fun updateShowtime(
         @RequestBody @Valid request: UpdateShowtimeRequest,
         @PathVariable showtimeId: Int
@@ -77,7 +77,6 @@ internal class ShowtimeController(private val showtimeService: ShowtimeService) 
     }
 
 }
-
 
 @Schema(description = "Response for getting movie showtimes")
 data class GetShowtimesResponse(
@@ -137,7 +136,7 @@ data class ShowtimeDetails(
 @Schema(description = "Showtime price")
 data class Price(val price: String) {
     companion object {
-        fun fromMoney(money: Money) = Price("${money.amount} ${money.currency}")
+        fun fromMoney(money: Money) = with(money) { Price("$amount $currency") }
     }
 }
 
@@ -171,13 +170,13 @@ data class MoneyDTO(
         description = "Price currency",
         example = "PLN",
 
-        allowableValues = arrayOf("PLN", "EUR")
+        allowableValues = ["PLN", "EUR"]
     )
     @field:NotNull(message = "Currency is required")
     val currency: String
 ) {
     companion object {
-        fun fromMoney(money: Money) = MoneyDTO(money.amount, money.currency.code)
+        fun fromMoney(money: Money) = with(money) { MoneyDTO(amount, currency.code) }
     }
 }
 
@@ -217,10 +216,10 @@ data class GetShowtimeResponse(
     val price: MoneyDTO
 ) {
     companion object {
-        fun fromShowtime(showtime: Showtime) = GetShowtimeResponse(
-            showtime.id!!,
-            showtime.movie.title,
-            LocalDateTime.of(showtime.showDate, showtime.showTime), MoneyDTO.fromMoney(showtime.price)
-        )
+        fun fromShowtime(showtime: Showtime) = with(showtime) {
+            GetShowtimeResponse(
+                id!!, movie.title, LocalDateTime.of(showDate, showTime), MoneyDTO.fromMoney(price)
+            )
+        }
     }
 }

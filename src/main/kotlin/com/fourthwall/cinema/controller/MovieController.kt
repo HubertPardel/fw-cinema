@@ -26,7 +26,7 @@ class MovieController(private val movieService: MovieService) {
         ]
     )
     @GetMapping("/{movieId}")
-    fun getMovie(@PathVariable movieId: Int) =
+    fun getMovie(@PathVariable movieId: Int): ResponseEntity<GetMovieResponse> =
         ResponseEntity.status(HttpStatus.OK)
             .body(GetMovieResponse.fromMovie(movieService.findById(movieId)))
 
@@ -37,7 +37,7 @@ class MovieController(private val movieService: MovieService) {
         ]
     )
     @GetMapping
-    fun getMovies() =
+    fun getAllMovies(): ResponseEntity<List<GetMovieResponse>> =
         ResponseEntity.status(HttpStatus.OK)
             .body(movieService.findAll().map { GetMovieResponse.fromMovie(it) })
 
@@ -45,11 +45,12 @@ class MovieController(private val movieService: MovieService) {
     @ApiResponses(
         value = [
             ApiResponse(responseCode = "200", description = "Successful operation"),
+            ApiResponse(responseCode = "400", description = "Error when fetching move details"),
             ApiResponse(responseCode = "404", description = "Movie with given id not found")
         ]
     )
     @GetMapping("/details/{movieId}")
-    fun getMovieDetails(@PathVariable movieId: Int) =
+    fun getMovieDetails(@PathVariable movieId: Int): ResponseEntity<GetMovieDetails> =
         ResponseEntity.status(HttpStatus.OK)
             .body(movieService.findMovieDetails(movieId))
 }
@@ -73,7 +74,7 @@ data class GetMovieResponse(
     ) val imdbId: String,
 ) {
     companion object {
-        fun fromMovie(movie: Movie) = GetMovieResponse(movie.id!!, movie.title, movie.imdbId)
+        fun fromMovie(movie: Movie) = with(movie) { GetMovieResponse(id!!, title, imdbId) }
     }
 }
 
@@ -88,23 +89,23 @@ data class GetMovieDetails(
         description = "Movie title",
         example = "The Fast and the Furious",
         type = "string"
-    ) val movieTitle: String? = null,
+    ) val movieTitle: String,
     @field:Schema(
         description = "Movie description",
         example = "Movie about cars and stuff",
         type = "string"
-    ) val movieDescription: String? = null,
+    ) val movieDescription: String,
     @field:Schema(
         description = "Runtime",
         example = "110 min",
         type = "string"
-    ) val runtime: String? = null,
+    ) val runtime: String,
     @field:Schema(
         description = "Release date",
         example = "22 Jun 2001",
         type = "string",
         format = "date"
-    ) val releaseDate: String? = null,
+    ) val releaseDate: String,
     @field:Schema(
         description = "IMDb Id",
         example = "tt123456",
@@ -115,5 +116,5 @@ data class GetMovieDetails(
         example = "7.5",
         type = "number",
         format = "double"
-    ) val imdbRating: BigDecimal? = null,
+    ) val imdbRating: BigDecimal
 )
