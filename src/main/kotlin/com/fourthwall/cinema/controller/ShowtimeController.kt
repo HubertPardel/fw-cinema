@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.media.ArraySchema
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
+import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import jakarta.validation.Valid
 import jakarta.validation.constraints.NotNull
 import mu.KotlinLogging
@@ -23,12 +24,15 @@ private val logger = KotlinLogging.logger { }
 
 @RestController
 @RequestMapping("/v1/showtimes")
+@SecurityRequirement(name = "cinema")
 internal class ShowtimeController(private val showtimeService: ShowtimeService) {
 
     @Operation(summary = "Get showtime by id")
     @ApiResponses(
         value = [
             ApiResponse(responseCode = "200", description = "Successful operation"),
+            ApiResponse(responseCode = "401", description = "User not authenticated"),
+            ApiResponse(responseCode = "403", description = "User has no authorization for given operation"),
             ApiResponse(responseCode = "404", description = "Showtime with given id not found")
         ]
     )
@@ -43,6 +47,8 @@ internal class ShowtimeController(private val showtimeService: ShowtimeService) 
     @ApiResponses(
         value = [
             ApiResponse(responseCode = "200", description = "Successful operation"),
+            ApiResponse(responseCode = "401", description = "User not authenticated"),
+            ApiResponse(responseCode = "403", description = "User has no authorization for given operation"),
             ApiResponse(responseCode = "404", description = "Movie with given id not found")
         ]
     )
@@ -60,6 +66,8 @@ internal class ShowtimeController(private val showtimeService: ShowtimeService) 
     @ApiResponses(
         value = [
             ApiResponse(responseCode = "201", description = "Successful operation"),
+            ApiResponse(responseCode = "401", description = "User not authenticated"),
+            ApiResponse(responseCode = "403", description = "User has no authorization for given operation"),
             ApiResponse(responseCode = "404", description = "Movie with given id not found")
         ]
     )
@@ -73,6 +81,8 @@ internal class ShowtimeController(private val showtimeService: ShowtimeService) 
     @ApiResponses(
         value = [
             ApiResponse(responseCode = "204", description = "Successful operation"),
+            ApiResponse(responseCode = "401", description = "User not authenticated"),
+            ApiResponse(responseCode = "403", description = "User has no authorization for given operation"),
             ApiResponse(responseCode = "404", description = "Showtime with given id not found")
         ]
     )
@@ -81,7 +91,7 @@ internal class ShowtimeController(private val showtimeService: ShowtimeService) 
         @RequestBody @Valid request: UpdateShowtimeRequest,
         @PathVariable showtimeId: Int
     ): ResponseEntity<Any> {
-        logger.info { "Updating showtime id =$showtimeId" }
+        logger.info { "Updating showtime id=$showtimeId" }
         showtimeService.updateShowtime(showtimeId, request)
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build()
     }

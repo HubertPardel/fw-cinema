@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
+import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import mu.KotlinLogging
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -19,12 +20,15 @@ private val logger = KotlinLogging.logger { }
 
 @RestController
 @RequestMapping("/v1/movies")
+@SecurityRequirement(name = "cinema")
 class MovieController(private val movieService: MovieService) {
 
     @Operation(summary = "Get movie by id")
     @ApiResponses(
         value = [
             ApiResponse(responseCode = "200", description = "Successful operation"),
+            ApiResponse(responseCode = "401", description = "User not authenticated"),
+            ApiResponse(responseCode = "403", description = "User has no authorization for given operation"),
             ApiResponse(responseCode = "404", description = "Movie with given id not found")
         ]
     )
@@ -38,7 +42,9 @@ class MovieController(private val movieService: MovieService) {
     @Operation(summary = "Get all movies")
     @ApiResponses(
         value = [
-            ApiResponse(responseCode = "200", description = "Successful operation")
+            ApiResponse(responseCode = "200", description = "Successful operation"),
+            ApiResponse(responseCode = "401", description = "User not authenticated"),
+            ApiResponse(responseCode = "403", description = "User has no authorization for given operation")
         ]
     )
     @GetMapping
@@ -53,6 +59,8 @@ class MovieController(private val movieService: MovieService) {
         value = [
             ApiResponse(responseCode = "200", description = "Successful operation"),
             ApiResponse(responseCode = "400", description = "Error when fetching move details"),
+            ApiResponse(responseCode = "401", description = "User not authenticated"),
+            ApiResponse(responseCode = "403", description = "User has no authorization for given operation"),
             ApiResponse(responseCode = "404", description = "Movie with given id not found")
         ]
     )

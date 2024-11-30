@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
+import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import jakarta.validation.Valid
 import jakarta.validation.constraints.Email
 import jakarta.validation.constraints.NotNull
@@ -20,12 +21,15 @@ private val logger = KotlinLogging.logger { }
 
 @RestController
 @RequestMapping("/v1/reviews")
+@SecurityRequirement(name = "cinema")
 class ReviewController(private val reviewService: ReviewService) {
 
     @Operation(summary = "Returns reviews for given movieId")
     @ApiResponses(
         value = [
             ApiResponse(responseCode = "200", description = "Successful operation"),
+            ApiResponse(responseCode = "401", description = "User not authenticated"),
+            ApiResponse(responseCode = "403", description = "User has no authorization for given operation"),
             ApiResponse(responseCode = "404", description = "Movie with given id not found")
         ]
     )
@@ -42,6 +46,8 @@ class ReviewController(private val reviewService: ReviewService) {
         value = [
             ApiResponse(responseCode = "201", description = "Successful operation"),
             ApiResponse(responseCode = "400", description = "Invalid request"),
+            ApiResponse(responseCode = "401", description = "User not authenticated"),
+            ApiResponse(responseCode = "403", description = "User has no authorization for given operation"),
             ApiResponse(responseCode = "404", description = "Movie with given id not found"),
             ApiResponse(responseCode = "409", description = "Review for given movie from given user already exists")
         ]
