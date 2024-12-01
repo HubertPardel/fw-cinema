@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional
 interface ReviewService {
     fun findMovieReviews(movieId: Int): GetMovieReviewsResponse
     fun rateMovie(request: CreateReviewRequest): CreateReviewResponse
+    fun deleteReview(reviewId: Int)
 }
 
 @Service
@@ -26,7 +27,7 @@ class ReviewServiceImpl(private val reviewRepository: ReviewRepository, private 
         require(request.userEmail.isEmailValid()) { "Invalid email: ${request.userEmail}" }
 
         reviewRepository.findByMovieIdAndUserEmail(request.movieId, request.userEmail)
-            ?.let { throw ReviewAlreadyExists(request.movieId, request.userEmail) }
+            ?.let { throw ReviewAlreadyExistsException(request.movieId, request.userEmail) }
 
         return CreateReviewResponse.fromReview(
             reviewRepository.save(
@@ -38,6 +39,12 @@ class ReviewServiceImpl(private val reviewRepository: ReviewRepository, private 
             )
         )
     }
+
+    override fun deleteReview(reviewId: Int) {
+        if (!reviewRepository.existsById(reviewId)) throw ReviewNotExistsException(reviewId)
+        reviewRepository.deleteById(reviewId)
+    }
+
 
     override fun findMovieReviews(movieId: Int): GetMovieReviewsResponse {
         if (!movieRepository.existsById(movieId))
@@ -51,5 +58,7 @@ class ReviewServiceImpl(private val reviewRepository: ReviewRepository, private 
     }
 }
 
-class ReviewAlreadyExists(movieId: Int, userEmail: String) :
+class ReviewAlreadyExistsException(movieId: Int, userEmail: String) :
     RuntimeException("Review for movie with id=$movieId from user=$userEmail already exists")
+
+class ReviewNotExistsException(reviewId: Int) : RuntimeException("Review with id=$reviewId not exists")

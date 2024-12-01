@@ -57,6 +57,22 @@ class ReviewController(private val reviewService: ReviewService) {
         logger.info { "Creating review for movie id=${request.movieId} " }
         return ResponseEntity.status(HttpStatus.CREATED).body(reviewService.rateMovie(request))
     }
+
+    @Operation(summary = "Deletes review with given id")
+    @ApiResponses(
+        value = [
+            ApiResponse(responseCode = "204", description = "Successful operation"),
+            ApiResponse(responseCode = "401", description = "User not authenticated"),
+            ApiResponse(responseCode = "403", description = "User has no authorization for given operation"),
+            ApiResponse(responseCode = "404", description = "Review with given id not found")
+        ]
+    )
+    @DeleteMapping("/{reviewId}")
+    fun deleteReview(@PathVariable reviewId: Int): ResponseEntity<Any> {
+        logger.info { "Deleting review id=$reviewId" }
+        reviewService.deleteReview(reviewId)
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build()
+    }
 }
 
 @Schema(description = "Request for review creation")

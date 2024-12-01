@@ -1,10 +1,7 @@
 package com.fourthwall.cinema.controller
 
 import com.fourthwall.cinema.omdb.OMDbClientException
-import com.fourthwall.cinema.service.MovieDetailsNotAvailableException
-import com.fourthwall.cinema.service.MovieNotExistsException
-import com.fourthwall.cinema.service.ReviewAlreadyExists
-import com.fourthwall.cinema.service.ShowtimeNotExistsException
+import com.fourthwall.cinema.service.*
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -33,9 +30,14 @@ internal class RestControllerAdvice {
         return ResponseEntity(ex.message, HttpStatus.BAD_REQUEST)
     }
 
-    @ExceptionHandler(value = [ReviewAlreadyExists::class])
-    fun handleReviewAlreadyExistsException(ex: ReviewAlreadyExists): ResponseEntity<Any> {
+    @ExceptionHandler(value = [ReviewAlreadyExistsException::class])
+    fun handleReviewAlreadyExistsException(ex: ReviewAlreadyExistsException): ResponseEntity<Any> {
         return ResponseEntity(ex.message, HttpStatus.CONFLICT)
+    }
+
+    @ExceptionHandler(value = [ReviewNotExistsException::class])
+    fun handleReviewNotExistsException(ex: ReviewNotExistsException): ResponseEntity<Any> {
+        return ResponseEntity(ex.message, HttpStatus.NOT_FOUND)
     }
 
     @ExceptionHandler(value = [MethodArgumentNotValidException::class])

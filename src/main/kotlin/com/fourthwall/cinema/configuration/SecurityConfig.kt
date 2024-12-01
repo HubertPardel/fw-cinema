@@ -41,7 +41,9 @@ class SecurityConfig {
             securityMatcher("/v1/**")
             authorizeHttpRequests {
                 authorize("/v1/movies**", hasAnyRole("ADMIN", "USER"))
-                authorize("/v1/reviews**", hasAnyRole("ADMIN", "USER"))
+                authorize(HttpMethod.GET, "/v1/reviews**", hasAnyRole("ADMIN", "USER"))
+                authorize(HttpMethod.POST, "/v1/reviews**", hasAnyRole("ADMIN", "USER"))
+                authorize(HttpMethod.DELETE, "/v1/reviews/*", hasRole("ADMIN"))
                 authorize(HttpMethod.GET, "/v1/showtimes**", hasAnyRole("ADMIN", "USER"))
                 authorize(HttpMethod.POST, "/v1/showtimes**", hasRole("ADMIN"))
                 authorize(HttpMethod.PATCH, "/v1/showtimes/*", hasRole("ADMIN"))
