@@ -1,5 +1,6 @@
 package com.fourthwall.cinema.controller
 
+import com.fourthwall.cinema.omdb.OMDbClientException
 import com.fourthwall.cinema.service.MovieDetailsNotAvailableException
 import com.fourthwall.cinema.service.MovieNotExistsException
 import com.fourthwall.cinema.service.ReviewAlreadyExists
@@ -24,6 +25,11 @@ internal class RestControllerAdvice {
 
     @ExceptionHandler(value = [MovieDetailsNotAvailableException::class])
     fun handleMovieDetailsNotAvailableException(ex: MovieDetailsNotAvailableException): ResponseEntity<Any> {
+        return ResponseEntity(ex.message, HttpStatus.BAD_REQUEST)
+    }
+
+    @ExceptionHandler(value = [OMDbClientException::class])
+    fun handleOMDbClientException(ex: OMDbClientException): ResponseEntity<Any> {
         return ResponseEntity(ex.message, HttpStatus.BAD_REQUEST)
     }
 

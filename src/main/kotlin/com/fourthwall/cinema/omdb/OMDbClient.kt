@@ -7,6 +7,7 @@ import org.springframework.http.MediaType.APPLICATION_JSON
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestClient
 import org.springframework.web.client.body
+import java.lang.Exception
 
 private val logger = KotlinLogging.logger { }
 
@@ -24,11 +25,15 @@ class OMDbClient {
 
         logger.info { "Calling OMDb service with imdbId=$imdbId" }
 
-        return restClient.get()
-            .uri(omdbUrl, omdbApiKey, imdbId)
-            .accept(APPLICATION_JSON)
-            .retrieve()
-            .body<OMDbResponse>()
+        try {
+            return restClient.get()
+                .uri(omdbUrl, omdbApiKey, imdbId)
+                .accept(APPLICATION_JSON)
+                .retrieve()
+                .body<OMDbResponse>()
+        } catch (e: Exception) {
+            throw OMDbClientException(e)
+        }
     }
 }
 
@@ -43,3 +48,5 @@ data class OMDbResponse(
     val description: String,
     val imdbRating: String,
 )
+
+class OMDbClientException(exception: Exception) : RuntimeException(exception.message)
